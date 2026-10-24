@@ -63,6 +63,7 @@ PY
             }
         }
 
+
         stage('Test Candidate') {
             steps {
                 sh '''
@@ -96,10 +97,98 @@ PY
                         exit 1
                     fi
 
-                    echo "Health endpoint berhasil."
+                    echo "Health check berhasil."
+
+                    python3 - <<'PY'
+import json
+import os
+import urllib.request
+import urllib.error
+
+columns = [
+    "Age", "Income", "LoanAmount", "CreditScore",
+    "MonthsEmployed", "NumCreditLines", "InterestRate",
+    "LoanTerm", "DTIRatio",
+    "Education_Bachelor's", "Education_High School",
+    "Education_Master's", "Education_PhD",
+    "EmploymentType_Full-time", "EmploymentType_Part-time",
+    "EmploymentType_Self-employed", "EmploymentType_Unemployed",
+    "MaritalStatus_Divorced", "MaritalStatus_Married",
+    "MaritalStatus_Single",
+    "HasMortgage_No", "HasMortgage_Yes",
+    "HasDependents_No", "HasDependents_Yes",
+    "LoanPurpose_Auto", "LoanPurpose_Business",
+    "LoanPurpose_Education", "LoanPurpose_Home",
+    "LoanPurpose_Other",
+    "HasCoSigner_No", "HasCoSigner_Yes",
+]
+
+row = [
+    35, 5000, 15000, 700, 36, 4, 8.5, 36, 0.25,
+    1, 0, 0, 0,       # Education: Bachelor's
+    1, 0, 0, 0,       # EmploymentType: Full-time
+    0, 1, 0,          # MaritalStatus: Married
+    0, 1,             # HasMortgage: Yes
+    0, 1,             # HasDependents: Yes
+    0, 0, 0, 1, 0,    # LoanPurpose: Home
+    1, 0,             # HasCoSigner: No
+]
+
+assert len(columns) == 31, f"Jumlah kolom salah: {len(columns)}"
+assert len(row) == len(columns), "Jumlah nilai tidak sesuai kolom"
+
+payload = {
+    "dataframe_split": {
+        "columns": columns,
+        "data": [row],
+    }
+}
+
+url = f"http://127.0.0.1:{os.environ['TEST_PORT']}/invocations"
+request = urllib.request.Request(
+    url,
+    data=json.dumps(payload).encode("utf-8"),
+    headers={"Content-Type": "application/json"},
+    method="POST",
+)
+
+try:
+    with urllib.request.urlopen(request, timeout=30) as response:
+        status = response.status
+        body = response.read().decode("utf-8")
+except urllib.error.HTTPError as exc:
+    print(f"Prediksi gagal: HTTP {exc.code}")
+    print(exc.read().decode("utf-8", errors="replace"))
+    raise SystemExit(1)
+except Exception as exc:
+    print(f"Request prediksi gagal: {exc}")
+    raise SystemExit(1)
+
+if status != 200:
+    print(f"Prediksi gagal: HTTP {status}")
+    print(body)
+    raise SystemExit(1)
+
+try:
+    result = json.loads(body)
+except json.JSONDecodeError:
+    print("Respons server bukan JSON yang valid.")
+    print(body)
+    raise SystemExit(1)
+
+predictions = result.get("predictions")
+if not isinstance(predictions, list) or len(predictions) != 1:
+    print("Respons tidak berisi tepat satu prediksi.")
+    print(result)
+    raise SystemExit(1)
+
+print(f"Tes prediksi berhasil. HTTP {status}")
+print(f"Hasil prediksi: {predictions[0]}")
+PY
                 '''
             }
         }
+
 
         stage('Deploy') {
             steps {
