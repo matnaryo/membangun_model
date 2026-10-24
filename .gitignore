@@ -1,0 +1,12 @@
+# Dataset hasil preprocessing
+train_processed.csv
+test_processed.csv
+
+# Artefak model eksperimen yang tidak digunakan pipeline
+loan_default/model_dir/model/model.pkl
+loan_default_tuning_1st/model_dir/model/model.pkl
+
+# Cache Python
+__pycache__/
+*.py[cod]
+Dagshub.txt

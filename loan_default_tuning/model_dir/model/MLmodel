@@ -1,0 +1,53 @@
+artifact_path: model
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.11.4
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.8.0
+mlflow_version: 2.18.0
+model_size_bytes: 6137469
+model_uuid: 895fc5973f0641ac9083a399caf0f3b8
+run_id: e44cb3d86b814eaebc76e531b785fea3
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "Age", "required": true}, {"type": "double",
+    "name": "Income", "required": true}, {"type": "double", "name": "LoanAmount",
+    "required": true}, {"type": "double", "name": "CreditScore", "required": true},
+    {"type": "double", "name": "MonthsEmployed", "required": true}, {"type": "double",
+    "name": "NumCreditLines", "required": true}, {"type": "double", "name": "InterestRate",
+    "required": true}, {"type": "double", "name": "LoanTerm", "required": true}, {"type":
+    "double", "name": "DTIRatio", "required": true}, {"type": "double", "name": "Education_Bachelor''s",
+    "required": true}, {"type": "double", "name": "Education_High School", "required":
+    true}, {"type": "double", "name": "Education_Master''s", "required": true}, {"type":
+    "double", "name": "Education_PhD", "required": true}, {"type": "double", "name":
+    "EmploymentType_Full-time", "required": true}, {"type": "double", "name": "EmploymentType_Part-time",
+    "required": true}, {"type": "double", "name": "EmploymentType_Self-employed",
+    "required": true}, {"type": "double", "name": "EmploymentType_Unemployed", "required":
+    true}, {"type": "double", "name": "MaritalStatus_Divorced", "required": true},
+    {"type": "double", "name": "MaritalStatus_Married", "required": true}, {"type":
+    "double", "name": "MaritalStatus_Single", "required": true}, {"type": "double",
+    "name": "HasMortgage_No", "required": true}, {"type": "double", "name": "HasMortgage_Yes",
+    "required": true}, {"type": "double", "name": "HasDependents_No", "required":
+    true}, {"type": "double", "name": "HasDependents_Yes", "required": true}, {"type":
+    "double", "name": "LoanPurpose_Auto", "required": true}, {"type": "double", "name":
+    "LoanPurpose_Business", "required": true}, {"type": "double", "name": "LoanPurpose_Education",
+    "required": true}, {"type": "double", "name": "LoanPurpose_Home", "required":
+    true}, {"type": "double", "name": "LoanPurpose_Other", "required": true}, {"type":
+    "double", "name": "HasCoSigner_No", "required": true}, {"type": "double", "name":
+    "HasCoSigner_Yes", "required": true}]'
+  outputs: '[{"type": "long", "required": true}]'
+  params: null
+utc_time_created: '2026-04-03 14:56:40.202984'
