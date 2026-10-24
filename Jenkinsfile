@@ -27,26 +27,51 @@ pipeline {
 
                     python3 - <<'PY'
 import json
-from pathlib import Path
+import sys
 
-report = json.loads(
-    Path("classification_report.json").read_text()
-)
+report_path = "classification_report.json"
 
-required = ["accuracy", "macro avg", "weighted avg"]
-for key in required:
-    if key not in report:
-        raise SystemExit(f"Metric wajib tidak ada: {key}")
+MIN_ACCURACY = 0.65
+MIN_MACRO_F1 = 0.55
+MIN_RECALL_CLASS_1 = 0.65
 
-for key in ["accuracy"]:
-    value = report[key]
-    if not isinstance(value, (int, float)) or not 0 <= value <= 1:
-        raise SystemExit(f"Metrik tidak valid: {key}={value}")
+try:
+    with open(report_path, encoding="utf-8") as file:
+        report = json.load(file)
 
-print("Artefak dan format metrik valid.")
-print(f"Accuracy: {report['accuracy']:.4f}")
-print(f"Macro F1: {report['macro avg']['f1-score']:.4f}")
+    accuracy = float(report["accuracy"])
+    macro_f1 = float(report["macro avg"]["f1-score"])
+    recall_class_1 = float(report["1"]["recall"])
+
+except (OSError, ValueError, KeyError, TypeError) as exc:
+    print(f"GAGAL: laporan metrik tidak valid: {exc}")
+    sys.exit(1)
+
+metrics = {
+    "Accuracy": (accuracy, MIN_ACCURACY),
+    "Macro F1": (macro_f1, MIN_MACRO_F1),
+    "Recall kelas 1": (
+        recall_class_1,
+        MIN_RECALL_CLASS_1,
+    ),
+}
+
+for name, (value, minimum) in metrics.items():
+    print(f"{name}: {value:.4f} (minimum {minimum:.4f})")
+
+    if not 0 <= value <= 1:
+        print(f"GAGAL: {name} di luar rentang 0–1.")
+        sys.exit(1)
+
+    if value < minimum:
+        print(f"GAGAL: {name} tidak memenuhi ambang minimum.")
+        sys.exit(1)
+
+print("LULUS: semua metrik memenuhi ambang minimum.")
 PY
+        '''
+    }
+}
                 '''
             }
         }
