@@ -72,9 +72,7 @@ PY
         '''
     }
 }
-                '''
-            }
-        }
+
 
         stage('Build Candidate Image') {
             steps {
