@@ -83,7 +83,7 @@ PY
                     ready=0
                     for i in $(seq 1 30); do
                         if curl -fsS \
-                          "http://127.0.0.1:${TEST_PORT}/health" >/dev/null; then
+                          "http://127.0.0.1:${TEST_PORT}/ping" >/dev/null; then
                             ready=1
                             break
                         fi
@@ -139,7 +139,7 @@ PY
                     healthy=0
                     for i in $(seq 1 30); do
                         if curl -fsS \
-                          "http://127.0.0.1:${HOST_PORT}/health" >/dev/null; then
+                          "http://127.0.0.1:${HOST_PORT}/ping" >/dev/null; then
                             healthy=1
                             break
                         fi
