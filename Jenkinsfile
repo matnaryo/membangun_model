@@ -70,22 +70,20 @@ for name, (value, minimum) in metrics.items():
 print("LULUS: semua metrik memenuhi ambang minimum.")
 PY
         '''
-    }
-}
-
+            }
+        }
 
         stage('Build Candidate Image') {
             steps {
                 sh '''
                     set -eu
                     docker build \
-                      -t "${IMAGE_NAME}:candidate-${BUILD_NUMBER}" \
-                      -f loan_default_tuning_lr/Dockerfile \
-                      loan_default_tuning_lr
+                        -t "${IMAGE_NAME}:candidate-${BUILD_NUMBER}" \
+                        -f loan_default_tuning_lr/Dockerfile \
+                        loan_default_tuning_lr
                 '''
             }
         }
-
 
         stage('Test Candidate') {
             steps {
@@ -100,14 +98,14 @@ PY
                     trap cleanup EXIT
 
                     docker run -d \
-                      --name "$TEST_CONTAINER" \
-                      -p "127.0.0.1:${TEST_PORT}:8080" \
-                      "${IMAGE_NAME}:candidate-${BUILD_NUMBER}"
+                        --name "$TEST_CONTAINER" \
+                        -p "127.0.0.1:${TEST_PORT}:8080" \
+                        "${IMAGE_NAME}:candidate-${BUILD_NUMBER}"
 
                     ready=0
                     for i in $(seq 1 30); do
                         if curl -fsS \
-                          "http://127.0.0.1:${TEST_PORT}/ping" >/dev/null; then
+                            "http://127.0.0.1:${TEST_PORT}/ping" >/dev/null; then
                             ready=1
                             break
                         fi
@@ -212,7 +210,6 @@ PY
             }
         }
 
-
         stage('Deploy') {
             steps {
                 input message: 'Image kandidat sehat. Lanjutkan deployment ke port 5005?', ok: 'Deploy'
@@ -221,7 +218,7 @@ PY
                     set -eu
 
                     OLD_IMAGE=$(docker inspect \
-                      --format='{{.Image}}' "$CONTAINER_NAME")
+                        --format='{{.Image}}' "$CONTAINER_NAME")
 
                     NEW_IMAGE="${IMAGE_NAME}:candidate-${BUILD_NUMBER}"
                     BACKUP_IMAGE="${IMAGE_NAME}:rollback-${BUILD_NUMBER}"
